@@ -1,18 +1,26 @@
 from django.db import models
 from django.conf import settings
 
+
+class Suplier(models.Model):
+    name = models.CharField(max_length=200)
+    address = models.CharField(max_length=500)
+    email = models.EmailField(null=False)
+    phone = models.CharField(max_length=16, null=True)
+
 class FridgeItem(models.Model):
     name = models.CharField(max_length=250, null=False)
     quantity = models.IntegerField(default=0)
     min_reminder = models.IntegerField(null=False)
     expiry_date = models.DateTimeField(null=True)
     last_added = models.DateTimeField(null=True)
+    suplier = models.ForeignKey(Suplier, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = _("FridgeItem")
-        verbose_name_plural = _("FridgeItems")
+        verbose_name = "FridgeItem"
+        verbose_name_plural = "FridgeItems"
 
     def __str__(self):
         return self.name
