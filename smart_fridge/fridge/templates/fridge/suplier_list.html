@@ -1,0 +1,28 @@
+{% extends "fridge/admin_base.html"%}
+
+{% block superuser_content %}
+    <h1>Suppliers</h1>
+    {% if suppliers_list%}
+    {% for supplier in suppliers_list %}
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>supplier.name</td>
+            <td>supplier.email</td>
+            <td>supplier.phone</td>
+          </tr>
+        </tbody>
+      </table>
+    {% endfor %}
+    {% else %}
+    <p>No Supplier is available</p> 
+    {% endif %}
+
+    {% endblock superuser_content %}

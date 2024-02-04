@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as authlogin, authenticate, logout as authlogout
 from django.urls import reverse_lazy
 
+from .models import Suplier
 
 
 def login(request):
@@ -37,7 +38,14 @@ def logout(request):
     authlogout(request)
     messages.info(request, "You have successfully logged out")
     return redirect('login')
-    
+
+
+class SupplierView(LoginRequiredMixin, ListView):
+    model = Suplier
+    context_object_name = "supplier_list"
+    template_name = "fridge/supplier.html"
+
+
 class HomeView(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy("fridge:login")
     template_name = "fridge/home.html"
