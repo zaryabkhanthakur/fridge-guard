@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as authlogin, authenticate, logout as authlogout
+from django.contrib.auth.models import User, Group
 from django.urls import reverse_lazy
 
 from .models import Suplier
+from .forms import UserCreationForm
 
 
 def login(request):
@@ -40,10 +42,34 @@ def logout(request):
     return redirect('login')
 
 
+
+def create_user(request):
+    if request.user.is_superuser and request.method == 'POST':
+        create_form = UserCreationForm( data=request.POST)
+        if create_form.is_valid():
+            username = create_form.cleaned_data.get("username")
+            email = create_form.cleaned_data.get("email")
+            role = create_form.cleaned_data.get("role")
+            password = create_form.cleaned_data.get("password")
+            print(role)
+            user = User.objects.create_user(username=username, email=email, password=password)
+            group = Group.objects.get(name=role)
+            user.groups.add(group)
+            messages.success(request, "User has been added successfully")
+        else:
+            messages.error(request, "Something went wrong")
+    create_form = UserCreationForm()    
+        
+    return render(request, "fridge/new_user.html", {'form': create_form})
+     
+            
+        
+    
+    
 class SupplierView(LoginRequiredMixin, ListView):
     model = Suplier
-    context_object_name = "supplier_list"
-    template_name = "fridge/supplier.html"
+    context_object_name = "suppliers_list"
+    template_name = "fridge/supplier_list.html"
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
