@@ -17,10 +17,9 @@ class FridgeItem(models.Model):
     min_reminder = models.IntegerField(null=False)
     expiry_date = models.DateTimeField(null=True)
     last_added = models.DateTimeField(null=True)
-    suplier = models.ForeignKey(Suplier, null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    auto_order = models.BooleanField(null=False, default=True)
     class Meta:
         verbose_name = "FridgeItem"
         verbose_name_plural = "FridgeItems"

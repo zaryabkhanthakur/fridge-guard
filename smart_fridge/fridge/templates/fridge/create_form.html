@@ -7,5 +7,6 @@
         {% csrf_token %}
         {{ form|crispy }}
         <button type="Submit" class="btn btn-primary"> Create </button>
+        <a class="btn btn-danger" href="javascript:window.history.back()"> Cancle </a>
     </form>
 {% endblock superuser_content %}

@@ -5,9 +5,9 @@ from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as authlogin, authenticate, logout as authlogout
 from django.contrib.auth.models import User, Group
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
-from .models import Suplier
+from .models import Suplier, FridgeItem
 from .forms import UserCreationForm
 
 
@@ -60,12 +60,22 @@ def create_user(request):
             messages.error(request, "Something went wrong")
     create_form = UserCreationForm()    
         
-    return render(request, "fridge/new_user.html", {'form': create_form})
+    return render(request, "fridge/create_form.html", {'form': create_form})
      
             
-        
-    
-    
+class FridgeItemView(LoginRequiredMixin, ListView):
+     model = FridgeItem
+     context_object_name = "items"
+     template_name = "fridge/fridge_item.html"     
+
+class FridgeItemCreateView(LoginRequiredMixin, CreateView):
+    model = FridgeItem
+    fields = ["name", "quantity", "min_reminder", "expiry_date", "auto_order"]
+    template_name = "fridge/create_form.html"
+    def get_success_url(self):
+        return reverse_lazy('fridge:items')
+
+
 class SupplierView(LoginRequiredMixin, ListView):
     model = Suplier
     context_object_name = "suppliers_list"

@@ -1,0 +1,35 @@
+{% extends "fridge/admin_base.html"%}
+
+{% block superuser_content %}
+    <h1>Fridge Inventory</h1>
+    {% if items%}
+    <a class="btn btn-outline-success" href="/items/add">Add Item</a>
+    <table class="table mt-3">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Expiry</th>
+            <th scope="col">Minimum Reminder</th> 
+            <th scope="col">Auto Order</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{item.name}}</td>
+            <td>{{item.quantity}}</td>
+            <td>{{item.expiry_date}}</td>
+            <td>{{item.min_reminder}}</td>
+            <td>{{item.auto_order}}</td>
+          </tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+    {% else %}
+    <p>Your fridge is empty</p>
+    <a class="btn btn-outline-success" href="/items/add">Add Item</a>
+    {% endif %}
+
+    {% endblock superuser_content %}
