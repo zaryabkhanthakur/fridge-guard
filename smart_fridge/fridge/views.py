@@ -6,6 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as authlogin, authenticate, logout as authlogout
 from django.contrib.auth.models import User, Group
 from django.urls import reverse_lazy, reverse
+from django.conf import settings
 
 from .models import Suplier, FridgeItem
 from .forms import UserCreationForm
@@ -25,7 +26,7 @@ def login(request):
                 authlogin(request, user)
                 messages.info(request, f"Welcome, {name}!")
                 print("hello")
-                return redirect("home")
+                return redirect("fridge:home")
             else:
                 print("invalid user name")
                 messages.error(request, "Invalid username or password")
@@ -39,7 +40,7 @@ def login(request):
 def logout(request):
     authlogout(request)
     messages.info(request, "You have successfully logged out")
-    return redirect('login')
+    return redirect('fridge:login')
 
 
 
@@ -74,6 +75,27 @@ class FridgeItemCreateView(LoginRequiredMixin, CreateView):
     template_name = "fridge/create_form.html"
     def get_success_url(self):
         return reverse_lazy('fridge:items')
+    
+class ChefListView(LoginRequiredMixin, ListView):
+    model = User
+    context_object_name = "users"
+
+    template_name = "fridge/user_list.html"
+    
+    def get_queryset(self):
+        queryset = User.objects.filter(groups__name="Chef")
+        print(queryset[0].get_all_permissions())
+        return queryset
+    
+class RiderViewList(LoginRequiredMixin, ListView):
+    model = User
+    context_object_name = "users"
+
+    template_name = "fridge/user_list.html"
+    
+    def get_queryset(self):
+        queryset = User.objects.filter(groups__name="Rider")
+        return queryset
 
 
 class SupplierView(LoginRequiredMixin, ListView):

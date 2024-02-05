@@ -1,0 +1,39 @@
+{% extends "fridge/admin_base.html"%}
+
+{% block superuser_content %}
+{%load fridge_tags%}
+
+    <h1>Users</h1>
+    {% if users%}
+    <a class="btn btn-outline-success mb-3" href="/users/add">Add Item</a>
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Group</th>
+            <th scope="col">Insert | Remove </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for kitchen_user in users %}
+          <tr>
+            <td>{{kitchen_user.username}}</td>
+            <td>{{kitchen_user.email}}</td>
+            <td>{{kitchen_user.groups.all.0.name}}</td>
+            <td>{% if kitchen_user.groups.all.0.name == "Chef" %}
+                Yes | Yes
+                {% else %}
+                Yes | No
+                {% endif %}
+                <a class="btn btn-outline-success" href="/create_user">Change Permissions</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+    <p>No User available</p> 
+    <a class="btn btn-outline-success" href="/create_user">Add New User</a>
+    {% endif %}
+    {% endblock superuser_content %}
