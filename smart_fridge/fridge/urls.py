@@ -2,8 +2,8 @@ from django.urls import path
 from .views import (HomeView, SupplierView, FridgeItemView, FridgeItemCreateView,
                     ChefListView, RiderViewList, SupplierCreaetView, NotificationListView,
                     StockNotificationListView, ExpiryNotificationListView, OrdersNotificationListView,
-                    FridgeOpenNotificationListView)
-from .views import login, logout, create_user
+                    FridgeOpenNotificationListView, OrderDetailView)
+from .views import login, logout, create_user, insert_item, remove_item
 
 app_name = "fridge"
 urlpatterns = [
@@ -22,6 +22,9 @@ urlpatterns = [
          name="fridge_updates"),
     path('items/', FridgeItemView.as_view(), name='items'),
     path('items/add', FridgeItemCreateView.as_view(), name="add_item"),
+    path('items/insert',  insert_item, name="insert_item"),
+    path('items/take', remove_item, name='remove-item'),
+    path('order/<int:pk>/', OrderDetailView.as_view(), name='order_detail'),
     path('suppliers/', SupplierView.as_view(), name="suppliers"),
     path('supplier/add', SupplierCreaetView.as_view(), name='add_supplier')
 ]

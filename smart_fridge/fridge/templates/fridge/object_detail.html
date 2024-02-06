@@ -1,0 +1,31 @@
+{% extends "fridge/base.html" %}
+{% block content %}
+{% load crispy_forms_tags %}
+{% include "fridge/header.html"%}
+
+<div class="container mt-4">
+    <h2 class="mb-4"> Order has been successfully submitted thank you!</h2>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="form-group">
+        <label for="item">Item name</label>
+        <input type="text" id="name" name="name" value="{{ object.fridge_item }}" readonly>
+        </div>
+        <div class="form-group">
+        <label for="item">Quantity</label>
+        <input type="text" id="name" name="name" value="{{ object.quantity  }}" readonly>
+        </div>
+        <div class="form-group">
+        <label for="item">Supplier</label>
+        <input type="text" id="name" name="name" value="{{ object.supplier }}" readonly>
+        </div>
+        <div class="form-group">
+        <label for="item">Order Status</label>
+        <input type="text" id="name" name="name" value="{{ object.order_status }}" readonly>
+        </div>
+        <a href="/home" class="btn btn-primary">Home</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

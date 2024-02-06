@@ -97,7 +97,7 @@ class Order(models.Model):
     quantity = models.PositiveIntegerField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def update_order_statue(self, value):
+    def update_order_statue(self):
         self.order_status = 'Delivered'
 
         superuser = User.objects.filter(is_superuser=True).first()
@@ -108,7 +108,7 @@ class Order(models.Model):
         self.save()
 
     def __str__(self):
-        return f"{self.fridge_item} ordered from {self.supplier} in {self.quantity}."
+        return f"{self.firdge_item} ordered from {self.supplier} in {self.quantity}."
 
 
 class Notification(models.Model):

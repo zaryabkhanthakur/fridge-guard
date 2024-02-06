@@ -15,10 +15,19 @@
         </div>
 
     {% else %}
-        {{user}}
-        {% if user.has_perm %}
-            {{user.get_all_permissions}}
+    <div class="d-flex justify-content-center mt-3">
+        {% if perms.fridge.view_fridgeitem %}
+            {% if perms.fridge.add_fridgeitem %}
+                <a class="btn btn-success mr-3" href="/items/insert">Insert Item</a>
+            {% endif %}
+            {% if perms.fridge.change_fridgeitem %}
+                <a class="btn btn-danger" href="/items/take">Remove Item</a>
+            {% endif %}
+    
+        {% else %}
+            <h1>Your access has been blocked please contact the Headchef for further infomration.</h1>
         {% endif %}
+    </div>
     {% endif %}
 
     

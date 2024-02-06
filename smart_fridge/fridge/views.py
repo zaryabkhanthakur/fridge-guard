@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView, ListView, CreateView
+from django.views.generic import TemplateView, ListView, CreateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
@@ -8,9 +8,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User, Group, Permission
 from django.urls import reverse_lazy, reverse
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
-from .models import Suplier, FridgeItem, Notification
-from .forms import UserCreationForm
+
+from .models import Suplier, FridgeItem, Notification, Order
+from .forms import UserCreationForm, RiderInsertionForm, ChefInsertionFrom, ChefRemoveFrom
 
 
 content_type = ContentType.objects.get_for_model(FridgeItem)
@@ -81,7 +83,57 @@ def create_user(request):
         
     return render(request, "fridge/create_form.html", {'form': create_form})
      
+
+@login_required
+def insert_item(request):
+    if request.user.groups.filter(name="Chef"):
+        print("here")
+        if request.method == 'POST':
+            form = ChefInsertionFrom(request.POST)
+            if form.is_valid():
+                item = form.cleaned_data.get('item')
+                quanity = form.cleaned_data.get('quantity')
+                item.insert_item(quanity, request.user)
+                return redirect("fridge:home")
+        else:
+            form = ChefInsertionFrom()
+
+        return render(request, "fridge/add_item.html", {'form': form})
+    if request.user.groups.filter(name="Rider"):
+        print("rider")
+        if request.method == 'POST':
+            form = RiderInsertionForm(request.POST)
             
+            if form.is_valid():
+                order_code = form.cleaned_data.get("order_code")
+                order = Order.objects.get(order_code=order_code)
+                order.update_order_statue()
+                return redirect("fridge:order_detail", pk=order.pk)
+            print("not valid")
+            print(form.errors)
+        else:
+            form = RiderInsertionForm()
+        
+        return render(request, "fridge/add_item.html", {'form': form})
+    print("returning here")
+    return redirect("fridge:home")
+
+@login_required
+def remove_item(request):
+    if request.user.groups.filter(name="Chef"):
+        print("here")
+        if request.method == 'POST':
+            form = ChefRemoveFrom(request.POST)
+            if form.is_valid():
+                item = form.cleaned_data.get('item')
+                quanity = form.cleaned_data.get('quantity')
+                item.take_item(quanity, request.user)
+                return redirect("fridge:home")
+        else:
+            form = ChefRemoveFrom()
+
+        return render(request, "fridge/add_item.html", {'form': form})
+    return redirect("fridge:home")
 class FridgeItemView(LoginRequiredMixin, ListView):
      model = FridgeItem
      context_object_name = "items"
@@ -204,3 +256,7 @@ class FridgeOpenNotificationListView(LoginRequiredMixin, ListView):
         queryset = Notification.objects.filter(type="fridge_opened").order_by("-created_at")
         queryset.update(is_read=True)
         return queryset
+    
+class OrderDetailView(LoginRequiredMixin, DetailView):
+    model = Order
+    template_name = "fridge/object_detail.html"
