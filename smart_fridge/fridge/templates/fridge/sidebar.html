@@ -3,15 +3,15 @@
 
     <ul class="list-unstyled ps-0">
         <li class="mb-1">
-            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
+            <a class="btn btn-toggle align-items-center rounded" href="/updates">
               Updates <span>{{ notification_count }}</span>
-            </button>
+            </a>
             <div class="collapse show" id="dashboard-collapse">
               <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                <li><a href="#" class="link-dark rounded">Expiry</a></li>
-                <li><a href="#" class="link-dark rounded">New Orders</a></li>
-                <li><a href="#" class="link-dark rounded">Stock</a></li>
-                <li><a href="#" class="link-dark rounded">Takes</a></li>
+                <li><a href="/updates/access" class="link-dark rounded">Fridge Access</a></li>
+                <li><a href="/updates/expiry" class="link-dark rounded">Expiry</a></li>
+                <li><a href="/updates/order" class="link-dark rounded">Orders</a></li>
+                <li><a href="/updates/stocks" class="link-dark rounded">Stock</a></li>
               </ul>
             </div>
           </li>

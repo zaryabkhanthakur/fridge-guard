@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as authlogin, authenticate, logout as authlogout
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
 from django.urls import reverse_lazy, reverse
 from django.conf import settings
 
@@ -54,6 +54,12 @@ def create_user(request):
             password = create_form.cleaned_data.get("password")
             print(role)
             user = User.objects.create_user(username=username, email=email, password=password)
+            can_insert_item = Permission.objects.get_or_create(codename='can_insert_item')
+            can_open_fridge = Permission.objects.get_or_create(codename='can_open_fridge')
+            if role == 'Chef':
+                can_remove_item = Permission.objects.get_or_create(codename='can_remove_fridge')
+
+            
             group = Group.objects.get(name=role)
             user.groups.add(group)
             messages.success(request, "User has been added successfully")
@@ -71,7 +77,7 @@ class FridgeItemView(LoginRequiredMixin, ListView):
 
 class FridgeItemCreateView(LoginRequiredMixin, CreateView):
     model = FridgeItem
-    fields = ["name", "quantity", "min_reminder", "expiry_date", "auto_order"]
+    fields = ["name", "quantity", "min_reminder", "expiry_date", "auto_order", "supplier", "default_order_quantity"]
     template_name = "fridge/create_form.html"
     def get_success_url(self):
         return reverse_lazy('fridge:items')
@@ -102,6 +108,13 @@ class SupplierView(LoginRequiredMixin, ListView):
     model = Suplier
     context_object_name = "suppliers_list"
     template_name = "fridge/supplier_list.html"
+    
+class SupplierCreaetView(LoginRequiredMixin, CreateView):
+    model = Suplier
+    fields = ["name", "address", "email", "phone"]
+    template_name = "fridge/create_form.html"
+    def get_success_url(self):
+        return reverse_lazy('fridge:suppliers')
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
@@ -113,3 +126,52 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context["notifications"] = Notification.objects.filter(is_read=False).count()
 
         return context
+    
+class NotificationListView(LoginRequiredMixin, ListView):
+    model = Notification
+    template_name = "fridge/updates.html"
+    context_object_name = "notifications"
+    
+    def get_queryset(self):
+        queryset = Notification.objects.all().order_by("-created_at")
+        return queryset
+    
+class ExpiryNotificationListView(LoginRequiredMixin, ListView):
+    model = Notification
+    template_name = "fridge/updates.html"
+    context_object_name = "notifications"
+    
+    def get_queryset(self):
+        queryset = Notification.objects.filter(type='item_expired').order_by("-created_at")
+        queryset.update(is_read=True)
+        return queryset
+
+class OrdersNotificationListView(LoginRequiredMixin, ListView):
+    model = Notification
+    template_name = "fridge/updates.html"
+    context_object_name = "notifications"
+    
+    def get_queryset(self):
+        queryset = Notification.objects.filter(type__contains='order').order_by("-created_at")
+        queryset.update(is_read=True)
+        return queryset
+    
+class StockNotificationListView(LoginRequiredMixin, ListView):
+    model = Notification
+    template_name = "fridge/updates.html"
+    context_object_name = "notifications"
+    
+    def get_queryset(self):
+        queryset = Notification.objects.filter(type__in=['item_removed', 'item_ inserted']).order_by("-created_at")
+        queryset.update(is_read=True)
+        return queryset
+
+class FridgeOpenNotificationListView(LoginRequiredMixin, ListView):
+    model = Notification
+    template_name = "fridge/updates.html"
+    context_object_name = "notifications"
+    
+    def get_queryset(self):
+        queryset = Notification.objects.filter(type="fridge_opened").order_by("-created_at")
+        queryset.update(is_read=True)
+        return queryset

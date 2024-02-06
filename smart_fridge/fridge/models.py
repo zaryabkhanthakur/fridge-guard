@@ -48,7 +48,7 @@ class FridgeItem(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     auto_order = models.BooleanField(null=False, default=True)
-
+    is_expired = models.BooleanField(null=False, default=False)
     constraints = [
         models.UniqueConstraint(fields=['name'], name="unique_item")
     ]
@@ -59,7 +59,11 @@ class FridgeItem(models.Model):
 
     def create_order(self):
         new_order = Order.objects.create(
-            fridget_item=self, supplier=self.supplier, quantity=self.default_order_quantity)
+            fridge_item=self, supplier=self.supplier, quantity=self.default_order_quantity)
+        superuser = User.objects.filter(is_superuser=True).first()
+        message = f"{superuser} has been ordered {self.default_order_quantity} of {self}."
+        _notf = Notification.objects.create(
+            user=superuser, type="order_placed", message=message)
         return new_order
 
     def take_item(self, amount, user):
@@ -88,7 +92,8 @@ class Order(models.Model):
     supplier = models.ForeignKey(Suplier, null=True, on_delete=models.SET_NULL)
     order_code = models.CharField(
         max_length=CODE_LENGTH, editable=False, default=generate_rider_password)
-    order_status = models.CharField(max_length=30, choices=ORDER_STATUS, default="processing")
+    order_status = models.CharField(
+        max_length=30, choices=ORDER_STATUS, default="processing")
     quantity = models.PositiveIntegerField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

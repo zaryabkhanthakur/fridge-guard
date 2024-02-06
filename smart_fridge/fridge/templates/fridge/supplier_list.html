@@ -15,15 +15,15 @@
         <tbody>
           {% for supplier in suppliers_list %}
           <tr>
-            <td>supplier.name</td>
-            <td>supplier.email</td>
-            <td>supplier.phone</td>
+            <td>{{supplier.name}}</td>
+            <td>{{supplier.email}}</td>
+            <td>{{supplier.phone}}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     {% else %}
     <p>No Supplier is available</p> 
-    {% endif %}
     <a class="btn btn-outline-success" href="/supplier/add">Add Item</a>
+    {% endif %}
     {% endblock superuser_content %}

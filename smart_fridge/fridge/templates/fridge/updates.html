@@ -1,0 +1,15 @@
+{% extends "fridge/admin_base.html"%}
+
+{% block superuser_content %}
+    <h1>Notification</h1>
+    {% if notifications%}
+    {% for notify in notifications %}
+    <div class="alert {% if notify.is_read %} alert-secondary {% else %} alert-primary {% endif %}" role="alert">
+        {{notify.message}}
+        <p class="mt-1"> {{notify.created_at}} </p>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>No new notification</p> 
+    {% endif %}
+    {% endblock superuser_content %}
