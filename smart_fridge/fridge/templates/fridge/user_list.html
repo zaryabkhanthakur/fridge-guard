@@ -25,7 +25,7 @@
 
               {% if permission_mapping %}
                 {% for codename, display_name in permission_mapping.items %}
-                {% with permission=user.get_all_permissions %}
+                {% with permission=user.user_permissions %}
                   <input type="checkbox" name="permissions" value="{{ codename }}" {% if permission.codename == codename %}checked{% endif %}> {{ display_name }} |
                 {% endwith %}
                 {% endfor %}

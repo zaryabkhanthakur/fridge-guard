@@ -1,19 +1,26 @@
 {% extends "fridge/base.html" %}
 {% block content %}
 {% include "fridge/header.html"%}
-<div class="container-fluid mb-5">
+<div class="container-fluid mb-5" style="background-color: #FFF7F1;">
     <h2 class class="mt-5">
         KitchenMaster! Manage Your Kitchen with fun!
     </h2>
     {% if user.is_superuser %}
-        <div class="row flex-nowrap">
+        <div class="row flex-nowrap" >
             {%include "fridge/sidebar.html"%}
             <div class="col py-3">
                 {% block superuser_content %}
                 {% endblock %}
               </div>
         </div>
+
+    {% else %}
+        {{user}}
+        {% if user.has_perm %}
+            {{user.get_all_permissions}}
+        {% endif %}
     {% endif %}
 
+    
 </div>                
 {% endblock %}
