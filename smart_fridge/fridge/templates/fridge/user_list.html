@@ -12,7 +12,7 @@
             <th scope="col">Name</th>
             <th scope="col">Email</th>
             <th scope="col">Group</th>
-            <th scope="col">Insert | Remove </th>
+            <th scope="col">Insert | Remove | Open </th>
           </tr>
         </thead>
         <tbody>
@@ -21,12 +21,16 @@
             <td>{{kitchen_user.username}}</td>
             <td>{{kitchen_user.email}}</td>
             <td>{{kitchen_user.groups.all.0.name}}</td>
-            <td>{% if kitchen_user.groups.all.0.name == "Chef" %}
-                Yes | Yes
-                {% else %}
-                Yes | No
-                {% endif %}
-                <a class="btn btn-outline-success" href="/create_user">Change Permissions</a>
+            <td>
+
+              {% if permission_mapping %}
+                {% for codename, display_name in permission_mapping.items %}
+                {% with permission=user.get_all_permissions %}
+                  <input type="checkbox" name="permissions" value="{{ codename }}" {% if permission.codename == codename %}checked{% endif %}> {{ display_name }} |
+                {% endwith %}
+                {% endfor %}
+              {% endif %}
+                <a class="btn btn-outline-success" href="/user/">Update</a>
             </td>
           </tr>
           {% endfor %}

@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as authlogin, authenticate, logout as authlogout
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User, Group, Permission
 from django.urls import reverse_lazy, reverse
 from django.conf import settings
@@ -11,6 +12,10 @@ from django.conf import settings
 from .models import Suplier, FridgeItem, Notification
 from .forms import UserCreationForm
 
+
+content_type = ContentType.objects.get_for_model(FridgeItem)
+fridge_permissions = Permission.objects.filter(content_type=content_type)
+print([perm.codename for perm in fridge_permissions])
 
 def login(request):
     if request.user.is_authenticated:
@@ -54,14 +59,21 @@ def create_user(request):
             password = create_form.cleaned_data.get("password")
             print(role)
             user = User.objects.create_user(username=username, email=email, password=password)
-            can_insert_item = Permission.objects.get_or_create(codename='can_insert_item')
-            can_open_fridge = Permission.objects.get_or_create(codename='can_open_fridge')
-            if role == 'Chef':
-                can_remove_item = Permission.objects.get_or_create(codename='can_remove_fridge')
-
             
+            can_insert_item = Permission.objects.get(codename='add_fridgeitem')
+            can_open_fridge = Permission.objects.get(codename='view_fridgeitem')
+
+            if role == 'Chef':
+                can_remove_item = Permission.objects.get(codename='change_fridgeitem')
+                user.user_permissions.add(can_remove_item)
+
+            user.user_permissions.add(can_insert_item, can_open_fridge)
+    
             group = Group.objects.get(name=role)
             user.groups.add(group)
+            
+            user.save()
+
             messages.success(request, "User has been added successfully")
         else:
             messages.error(request, "Something went wrong")
@@ -81,7 +93,12 @@ class FridgeItemCreateView(LoginRequiredMixin, CreateView):
     template_name = "fridge/create_form.html"
     def get_success_url(self):
         return reverse_lazy('fridge:items')
-    
+
+permission_mapping = {
+    'add_fridgeitem': 'Insert',
+    'change_fridgeitem': 'Remove',
+    'view_fridgeitem': 'Open',
+}
 class ChefListView(LoginRequiredMixin, ListView):
     model = User
     context_object_name = "users"
@@ -89,9 +106,15 @@ class ChefListView(LoginRequiredMixin, ListView):
     template_name = "fridge/user_list.html"
     
     def get_queryset(self):
-        queryset = User.objects.filter(groups__name="Chef")
+        queryset = User.objects.prefetch_related('user_permissions').filter(groups__name="Chef")
         print(queryset[0].get_all_permissions())
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["permission_mapping"] = permission_mapping
+
+        return context
     
 class RiderViewList(LoginRequiredMixin, ListView):
     model = User
@@ -102,6 +125,12 @@ class RiderViewList(LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = User.objects.filter(groups__name="Rider")
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["permission_mapping"] = permission_mapping
+
+        return context
 
 
 class SupplierView(LoginRequiredMixin, ListView):
