@@ -131,7 +131,6 @@ def remove_item(request):
                 return redirect("fridge:home")
         else:
             form = ChefRemoveFrom()
-
         return render(request, "fridge/add_item.html", {'form': form})
     return redirect("fridge:home")
 class FridgeItemView(LoginRequiredMixin, ListView):
