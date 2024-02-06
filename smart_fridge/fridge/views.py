@@ -8,13 +8,13 @@ from django.contrib.auth.models import User, Group
 from django.urls import reverse_lazy, reverse
 from django.conf import settings
 
-from .models import Suplier, FridgeItem
+from .models import Suplier, FridgeItem, Notification
 from .forms import UserCreationForm
 
 
 def login(request):
     if request.user.is_authenticated:
-        return redirect("home")
+        return redirect("fridge:home")
 
     if request.method == "POST":
         auth_form = AuthenticationForm(request, data=request.POST)
@@ -107,3 +107,9 @@ class SupplierView(LoginRequiredMixin, ListView):
 class HomeView(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy("fridge:login")
     template_name = "fridge/home.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["notifications"] = Notification.objects.filter(is_read=False).count()
+
+        return context
