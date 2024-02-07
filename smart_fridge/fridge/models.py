@@ -101,7 +101,8 @@ class Order(models.Model):
 
     def update_order_statue(self):
         self.update(order_status='Delivered')
-        self.firdge_item.updated_at(expiry_date=self.expiry_date)
+
+        self.firdge_item.update(expiry_date=self.expiry_date)
         superuser = User.objects.filter(is_superuser=True).first()
         message = f"{self} has been delieverd"
         notification = Notification.objects.create(
