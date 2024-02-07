@@ -15,6 +15,9 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
+from celery.schedules import crontab
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 print("base: ", BASE_DIR)
@@ -149,12 +152,10 @@ CELERY_TIMEZONE = 'UTC'
 CELERY_BEAT_SCHEDULE = {
     'reorder': {
         'task': 'fridge.tasks.reorder',
-        'schedule': timedelta(days=1),
-        'args': (),
+        'schedule': crontab(hour=0, minute=0, day_of_week=1)
     },
     'send_expiry_notfications': {
         'task': 'fridge.tasks.send_expiry_notifcations',
-        'schedule': timedelta(minutes=1),
-        'args': (),
+        'schedule': crontab(minute=0, hour=0),
     },
 }
