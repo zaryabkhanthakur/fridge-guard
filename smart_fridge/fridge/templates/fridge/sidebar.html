@@ -35,8 +35,20 @@
       </li>
 
       <li class="mb-1">
-        <a class="btn btn-toggle align-items-center" href="/items/" >
+        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
           Items
+        </button>
+        <div class="collapse" id="dashboard-collapse">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+            <li><a href="/items/expired" class="link-dark rounded">Expired</a></li>
+            <li><a href="/items/fresh" class="link-dark rounded">Fresh</a></li>
+            <li><a href="/items/all" class="link-dark rounded">All</a></li>
+          </ul>
+        </div>
+      </li>
+      <li class="mb-1">
+        <a class="btn btn-toggle align-items-center" href="/orders/all" >
+          Orders
         </a>
       </li>
     </ul>

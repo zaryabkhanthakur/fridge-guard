@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
 
@@ -95,17 +96,24 @@ class Order(models.Model):
     order_status = models.CharField(
         max_length=30, choices=ORDER_STATUS, default="processing")
     quantity = models.PositiveIntegerField(null=False)
+    expiry_date = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def update_order_statue(self):
-        self.order_status = 'Delivered'
-
+        self.update(order_status='Delivered')
+        self.firdge_item.updated_at(expiry_date=self.expiry_date)
         superuser = User.objects.filter(is_superuser=True).first()
         message = f"{self} has been delieverd"
         notification = Notification.objects.create(
             user=superuser, type="order_delivered", message=message)
 
-        self.save()
+    def save(self, *args, **kwargs):
+        superuser = User.objects.filter(is_superuser=True).first()
+        message = f"{self} has been created"
+        notification = Notification.objects.create(
+            user=superuser, type="order_delivered", message=message)
+
+        super(Order, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.firdge_item} ordered from {self.supplier} in {self.quantity}."
