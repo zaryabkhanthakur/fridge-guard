@@ -32,5 +32,5 @@ urlpatterns = [
     path('items/take', remove_item, name='remove-item'),
     path('order/<int:pk>/', OrderDetailView.as_view(), name='order_detail'),
     path('suppliers/', SupplierView.as_view(), name="suppliers"),
-    path('supplier/add', SupplierCreaetView.as_view(), name='add_supplier')
+    path('suppliers/add', SupplierCreaetView.as_view(), name='add_supplier')
 ]
